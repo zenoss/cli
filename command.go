@@ -14,6 +14,7 @@ type Command struct {
 	Description string
 	Action      func(context *Context)
 	Flags       []Flag
+	ArgsHelp    string
 }
 
 func (c Command) Run(ctx *Context) {

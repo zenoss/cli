@@ -14,7 +14,7 @@ var AppHelpTemplate = `NAME:
    {{.Name}} - {{.Usage}}
 
 USAGE:
-   {{.Name}} [global options] command [command options] [arguments...]
+   {{.Name}} [global options] command [command options] {{.ArgsHelp}}
 
 VERSION:
    {{.Version}}
@@ -34,7 +34,7 @@ var CommandHelpTemplate = `NAME:
    {{.Name}} - {{.Usage}}
 
 USAGE:
-   command {{.Name}} [command options] [arguments...]
+   command {{.Name}} [command options] {{.ArgsHelp}}
 
 DESCRIPTION:
    {{.Description}}
@@ -48,6 +48,7 @@ var helpCommand = Command{
 	Name:      "help",
 	ShortName: "h",
 	Usage:     "Shows a list of commands or help for one command",
+	ArgsHelp:  "[SUBCOMMAND]",
 	Action: func(c *Context) {
 		args := c.Args()
 		if len(args) > 0 {

@@ -142,3 +142,11 @@ func TestApp_ParseSliceFlags(t *testing.T) {
 		t.Errorf("%s does not match %s", parsedStringSlice, expectedStringSlice)
 	}
 }
+
+func TestApp_Defaults(t *testing.T) {
+	app := cli.NewApp()
+	expect(t, app.Name, os.Args[0])
+	expect(t, app.Usage, "A new cli application")
+	expect(t, app.Version, "0.0.0")
+	expect(t, app.ArgsHelp, "[arguments...]")
+}

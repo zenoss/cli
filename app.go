@@ -19,14 +19,17 @@ type App struct {
 	Flags []Flag
 	// The action to execute when no subcommands are specified
 	Action func(context *Context)
+	// Help string for Arguments.
+	ArgsHelp string
 }
 
 func NewApp() *App {
 	return &App{
-		Name:    os.Args[0],
-		Usage:   "A new cli application",
-		Version: "0.0.0",
-		Action:  helpCommand.Action,
+		Name:     os.Args[0],
+		Usage:    "A new cli application",
+		Version:  "0.0.0",
+		Action:   helpCommand.Action,
+		ArgsHelp: "[arguments...]",
 	}
 }
 
