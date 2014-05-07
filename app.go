@@ -223,7 +223,7 @@ func (a *App) Command(name string) *Command {
 
 func (a *App) hasFlag(flag Flag) bool {
 	for _, f := range a.Flags {
-		if flag == f {
+		if flag.getName() == f.getName() {
 			return true
 		}
 	}

@@ -64,6 +64,11 @@ func (c *Context) Generic(name string) interface{} {
 	return lookupGeneric(name, c.flagSet)
 }
 
+// Lists the flags (usually zero or one) to auto-complete
+func (c *Context) FlagCompletions() []string {
+	return getFlagCompletions(c.flagSet)
+}
+
 // Looks up the value of a global int flag, returns 0 if no int flag exists
 func (c *Context) GlobalInt(name string) int {
 	return lookupInt(name, c.globalSet)
@@ -92,6 +97,11 @@ func (c *Context) GlobalIntSlice(name string) []int {
 // Looks up the value of a global generic flag, returns nil if no generic flag exists
 func (c *Context) GlobalGeneric(name string) interface{} {
 	return lookupGeneric(name, c.globalSet)
+}
+
+// Lists the flags (usually zero or one) to auto-complete
+func (c *Context) GlobalFlagCompletions() []string {
+	return getFlagCompletions(c.globalSet)
 }
 
 // Determines if the flag was actually set exists
@@ -140,6 +150,32 @@ func (a Args) Present() bool {
 	return len(a) != 0
 }
 
+func getFlagCompletions(set *flag.FlagSet) []string {
+	result := []string{}
+	return result
+	token := prefixFor(BashCompletionFlag.getName()) + BashCompletionFlag.getName()
+	set.VisitAll(func(f *flag.Flag) {
+		switch value := (f.Value).(type) {
+		case GenericWrapper:
+			{
+				for _, v := range *value.Original {
+					if v == token {
+						result = append(result, f.Name)
+						break
+					}
+				}
+			}
+		default:
+			{
+				if value.String() == token {
+					result = append(result, f.Name)
+				}
+			}
+		}
+	})
+	return result
+}
+
 func lookupInt(name string, set *flag.FlagSet) int {
 	f := set.Lookup(name)
 	if f != nil {
@@ -178,8 +214,7 @@ func lookupString(name string, set *flag.FlagSet) string {
 func lookupStringSlice(name string, set *flag.FlagSet) []string {
 	f := set.Lookup(name)
 	if f != nil {
-		return (f.Value.(*StringSlice)).Value()
-
+		return (*(f.Value.(GenericWrapper)).Generic).(*StringSlice).Value()
 	}
 
 	return nil
@@ -188,8 +223,7 @@ func lookupStringSlice(name string, set *flag.FlagSet) []string {
 func lookupIntSlice(name string, set *flag.FlagSet) []int {
 	f := set.Lookup(name)
 	if f != nil {
-		return (f.Value.(*IntSlice)).Value()
-
+		return (*(f.Value.(GenericWrapper)).Generic).(*IntSlice).Value()
 	}
 
 	return nil
@@ -198,7 +232,7 @@ func lookupIntSlice(name string, set *flag.FlagSet) []int {
 func lookupGeneric(name string, set *flag.FlagSet) interface{} {
 	f := set.Lookup(name)
 	if f != nil {
-		return f.Value
+		return *(f.Value.(GenericWrapper)).Generic
 	}
 	return nil
 }
